@@ -1,6 +1,9 @@
 name: Schedule Daily Report
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     - cron: '0 17 * * *'  # Runs daily at 5 PM IST (11:00 UTC)
 
@@ -25,12 +28,10 @@ jobs:
 
       - name: Run Python script
         id: run-script
-        run: python daily-report.py 
+        run: python daily-report.py
 
       - name: Show script output
         run: |
           echo "Script output:"
           echo "${{ steps.run-script.outputs.stdout }}"
           echo "Script completed successfully."
-
-      
