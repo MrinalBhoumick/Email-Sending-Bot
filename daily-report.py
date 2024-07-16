@@ -1,6 +1,4 @@
-from datetime import datetime, timedelta
-import schedule
-import time
+from datetime import datetime
 import csv
 import os
 import smtplib
@@ -64,7 +62,7 @@ def send_email(recipients, custom_message):
     except Exception as e:
         print(f"Failed to send email: {e}")
 
-# Function to send daily report and manage duration
+# Function to send daily report
 def send_daily_report():
     start_time = datetime.now()
     recipients = read_recipients_from_csv(CSV_FILE)
@@ -77,12 +75,6 @@ def send_daily_report():
     duration = datetime.now() - start_time
     print(f"Script executed for {duration} seconds.")
 
-# Run the script for 5 minutes
-end_time = datetime.now() + timedelta(minutes=5)
-
-# Execute the send_daily_report function continuously until the 5 minutes duration is completed
-while datetime.now() < end_time:
-    send_daily_report()
-    time.sleep(1)
-
-print("Script execution completed for 5 minutes.")
+# Send the daily report once
+send_daily_report()
+print("Script execution completed.")
