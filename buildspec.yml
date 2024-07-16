@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+  build:
+    commands:
+      - pip install -r requirements.txt
+      # Schedule the Python script to run daily at 5 PM IST using cron
+      - echo "Scheduling Python script to run daily at 5 PM IST..."
+      - echo "0 11 * * * $(which python3) daily-report.py >> daily_report.log 2>&1" > mycron
+      - crontab mycron
+      - rm mycron
+
+  post_build:
+    commands:
+      - echo "Build complete. Scheduled Python script successfully."
