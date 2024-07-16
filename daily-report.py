@@ -1,12 +1,12 @@
+from datetime import datetime, timedelta
+import schedule
+import time
 import csv
 import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from datetime import date, datetime, timedelta
 from dotenv import load_dotenv
-import schedule
-import time
 
 # Load environment variables from .env file
 load_dotenv()
@@ -36,7 +36,7 @@ def read_custom_message(file_path):
 
 # Function to create email message with custom content
 def create_email_message(custom_message):
-    today = date.today().strftime("%Y-%m-%d")
+    today = datetime.today().strftime("%Y-%m-%d")
     message = f"Daily Report - {today}\n\n"
     message += custom_message
     return message
@@ -49,7 +49,7 @@ def send_email(recipients, custom_message):
     msg = MIMEMultipart()
     msg['From'] = EMAIL_USER
     msg['To'] = ', '.join(recipients)
-    msg['Subject'] = f"Daily Report - {date.today().strftime('%Y-%m-%d')}"
+    msg['Subject'] = f"Daily Report - {datetime.today().strftime('%Y-%m-%d')}"
 
     # Attach the message body
     msg.attach(MIMEText(message, 'plain'))
@@ -77,15 +77,12 @@ def send_daily_report():
     duration = datetime.now() - start_time
     print(f"Script executed for {duration} seconds.")
 
-# Schedule the job to run daily at a specific time (e.g., 12:00 PM)
-schedule.every().day.at("12:25").do(send_daily_report)
-
 # Run the script for 5 minutes
 end_time = datetime.now() + timedelta(minutes=5)
 
-# Run scheduled tasks until 5 minutes duration is completed
+# Execute the send_daily_report function continuously until the 5 minutes duration is completed
 while datetime.now() < end_time:
-    schedule.run_pending()
+    send_daily_report()
     time.sleep(1)
 
 print("Script execution completed for 5 minutes.")
