@@ -34,7 +34,6 @@ def read_custom_message(file_path):
 def create_email_message(custom_message, recipient_name):
     today = datetime.today().strftime("%Y-%m-%d")
     message = f"Dear {recipient_name},\n\n"
-    message += f"Daily Report - {today}\n\n"
     message += custom_message
     return message
 
@@ -46,7 +45,7 @@ def send_email(recipient_email, recipient_name, custom_message):
     msg = MIMEMultipart()
     msg['From'] = EMAIL_USER
     msg['To'] = recipient_email
-    msg['Subject'] = f"Daily Report - {datetime.today().strftime('%Y-%m-%d')}"
+    msg['Subject'] = f"Report for - {datetime.today().strftime('%Y-%m-%d')}"
 
     # Attach the message body
     msg.attach(MIMEText(message, 'plain'))
