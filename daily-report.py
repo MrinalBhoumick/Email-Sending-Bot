@@ -17,13 +17,11 @@ EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 CSV_FILE = 'recipients.csv'
 CUSTOM_MESSAGE_FILE = 'message.txt'
 
-# Function to read recipient emails from CSV file
+# Function to read recipient emails and names from CSV file
 def read_recipients_from_csv(file_path):
     with open(file_path, 'r') as file:
-        reader = csv.reader(file)
-        # Skip header row
-        next(reader)
-        recipients = [row[0] for row in reader]
+        reader = csv.DictReader(file)
+        recipients = [(row['email'], row['name']) for row in reader]
     return recipients
 
 # Function to read custom message from text file
@@ -33,20 +31,21 @@ def read_custom_message(file_path):
     return message
 
 # Function to create email message with custom content
-def create_email_message(custom_message):
+def create_email_message(custom_message, recipient_name):
     today = datetime.today().strftime("%Y-%m-%d")
-    message = f"Daily Report - {today}\n\n"
+    message = f"Dear {recipient_name},\n\n"
+    message += f"Daily Report - {today}\n\n"
     message += custom_message
     return message
 
 # Function to send email
-def send_email(recipients, custom_message):
-    message = create_email_message(custom_message)
+def send_email(recipient_email, recipient_name, custom_message):
+    message = create_email_message(custom_message, recipient_name)
 
     # Setup the MIME
     msg = MIMEMultipart()
     msg['From'] = EMAIL_USER
-    msg['To'] = ', '.join(recipients)
+    msg['To'] = recipient_email
     msg['Subject'] = f"Daily Report - {datetime.today().strftime('%Y-%m-%d')}"
 
     # Attach the message body
@@ -58,9 +57,9 @@ def send_email(recipients, custom_message):
             server.starttls()  # Secure the connection
             server.login(EMAIL_USER, EMAIL_PASSWORD)
             server.send_message(msg)
-        print("Email sent successfully.")
+        print(f"Email sent successfully to {recipient_name} ({recipient_email}).")
     except Exception as e:
-        print(f"Failed to send email: {e}")
+        print(f"Failed to send email to {recipient_name} ({recipient_email}): {e}")
 
 # Function to send daily report
 def send_daily_report():
@@ -68,8 +67,9 @@ def send_daily_report():
     recipients = read_recipients_from_csv(CSV_FILE)
     custom_message = read_custom_message(CUSTOM_MESSAGE_FILE)
     
-    # Send email to recipients
-    send_email(recipients, custom_message)
+    # Send email to each recipient
+    for recipient_email, recipient_name in recipients:
+        send_email(recipient_email, recipient_name, custom_message)
     
     # Calculate duration
     duration = datetime.now() - start_time

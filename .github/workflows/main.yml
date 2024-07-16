@@ -5,7 +5,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 17 * * *'  # Runs daily at 5 PM IST (11:00 UTC)
+    - cron: '30 4 * * 1-5' 
 
 jobs:
   run_script:
